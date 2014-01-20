@@ -8,6 +8,7 @@ import com.webi.ProdConfig
 import geb.spock.GebReportingSpec
 import geb.spock.GebSpec
 import spock.lang.Shared
+import spock.lang.Unroll;
 import static Singleton.*
 
 /**
@@ -21,6 +22,7 @@ class ExpenseReportSpec extends GebReportingSpec {
     def cleanupSpec() {
         //shoot the email at the end of the test run
 		ExpenseDetails expenseDetails = expenseDetails()
+		println 'expenseDetails is ' +expenseDetails
 		def expenseDao = new ExpenseDAO()
 		//persist and send email only if the current data is different from the 
 		//latest data in DB. Else no point in cluttering mail box
@@ -36,60 +38,27 @@ class ExpenseReportSpec extends GebReportingSpec {
 		}
 	}
 
-    def "get bank of america data"() {
-        when:
-        to BOAHomePage
-        login(config().boa.id )
-
-        then:
-        at BOASiteKeyChallengePage
-		
+	@Unroll
+	def "get #institute data"() {
 		when:
-		signIn (config().boa.password)
+		to startPage
+		login
 		
 		then:
-		at BOAAccountOverviewPage
+		at accountPage
+		
+		when:
 		balance
 		logout
-    }
-	
-	def "get Amex data"() {	
-        when:
-        to AmexHomePage
-        login(config().amex.id, config().amex.password)
-
-        then:
-        at AmexAccountPage
-		balance()
-		
-		when:
-		logout
 		
 		then:
-		waitFor(2) {
-			title == 'American Express Login'
-        }
-    }
-	
-	def "get Macy's data"() {
-		when:
-		to MacysSignInPage
-		login(config().macys.id, config().macys.password)
-
-		then:
-		at MacysCreditAccountSummaryPage
-		balance()
-		logout()
-	}
-	
-	def "get Target's data"() {
-		when:
-		to TargetHomePage
-		login(config().target.id, config().target.password)
-
-		then:
-		at TargetAccountSummaryPage
-		balance()
-		logout()
+		noExceptionThrown()
+		
+		where:
+		institute 			| 	startPage		| 	accountPage	
+		'Bank of America'	|  	BOAHomePage		|	BOAAccountPage	
+		'Amex'				|	AmexHomePage	|	AmexAccountPage
+		'Target'			|	TargetHomePage	|	TargetAccountPage	
+		'Macys'				|	MacysHomePage	|	MacysAccountPage 
 	}
 }

@@ -11,9 +11,9 @@ class TargetHomePage extends Page {
 	static url = 'https://rcam.target.com/default.aspx'
 	static at = { title == 'Log In' }
 	static content = {
-		login() { String userId, String password->
-			$('input', id:'Login_UserName') << userId
-			$('input', id:'Login_Password') << password
+		login() {
+			$('input', id:'Login_UserName') << config().target.id
+			$('input', id:'Login_Password') << config().target.password
 			$('input', id:'Login_btnSignIn_btnSignIn').click()
 			driver.switchTo().activeElement()
 			//Security Question launched??

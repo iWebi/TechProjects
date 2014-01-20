@@ -1,23 +1,26 @@
 package com.webi
 import geb.Page
+import static Singleton.*
 
 class BOAHomePage extends Page {
 	static url = "https://secure.bankofamerica.com/login/sign-in/signOnScreen.go"
 	static at = { waitFor{ title == /Bank of America | Online Banking | Sign In | Online ID/ } }
 
 	static content = {
-		login { String inputId ->
+		login { 
 			def form = $('form', name: 'enter-online-id-form').with {
-				onlineId = inputId
-				$('a', name: 'enter-online-id-submit').click()
+				onlineId = config().boa.id
+				$('a', name: 'enter-online-id-submit').click(BOASiteKeyChallengePage)
 				
-				def verifyQuestion = $('label',text:Singleton.config().boa.verifyQuestion)
+				def verifyQuestion = $('label',text:config().boa.verifyQuestion)
 				if ( verifyQuestion?.displayed ) {
-					$('input', id:'tlpvt-challenge-answer') << Singleton.config().boa.verifyAnswer
-					$('a', name:'enter-online-id-submit').click()
+					$('input', id:'tlpvt-challenge-answer') << config().boa.verifyAnswer
+					$('a', name:'enter-online-id-submit').click(BOASiteKeyChallengePage)
 				}
-				return true
-			}
+				$('input', name:'password') << config().boa.password
+				$('a', name:'confirm-sitekey-submit').click()
+ 			}
+			return true
 		}
 	}
 }
