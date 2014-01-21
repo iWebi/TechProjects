@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expense Summary</title>
+    <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+</head>
+<body>
+<div id='total_monthly_expense_summary_table' style="width: 1040px;"></div>
+<div id="total_monthly_expense_summary_pie" style="width: 900px; height: 500px;"></div>
+<div id="time2time_itemized_column_chart" style="width: 900px; height: 500px;"></div>
+<div id="time2time_total_column_chart" style="width: 900px; height: 500px;"></div>
+<div id="overall_year_distribution_pie_chart" style="width: 900px; height: 500px;"></div>
+
+<script>
+google.load('visualization', '1', {packages:['corechart', 'table']});
+google.setOnLoadCallback(drawCharts);
+
+function drawCharts() {
+    drawMonthlySpendingPieChart();
+    drawTotalMonthlyExpenseSummary();
+    drawItemizedExpensesComparisonChart();
+    drawTotalExpensesComparisonChart();
+    drawYearlySpendingPieChart();
+}
+
+function drawTotalExpensesComparisonChart() {
+
+    var data = google.visualization.arrayToDataTable([
+     ['Item', 'CurrentWeek', 'PreviousWeek'],[ '0', 319.92514, 59.00953 ],[ '1', 159.43143, 51.148884 ],[ '2', 123.31486, 121.776955 ],[ '3', 248.30896, 286.67203 ],[ '4', 308.40942, 177.22256 ],[ '5', 103.8557, 292.64368 ],[ '6', 404.05017, 236.49864 ],[ '7', 385.06467, 293.62335 ],[ '8', 196.63432, 221.14655 ],[ '9', 97.00489, 33.82591 ],]);
+     var options = {
+        title: 'Month-To-Month Total Comparison',
+          hAxis: {title: 'Month', titleTextStyle: {color: 'red'}}
+     };
+     var chart = new google.visualization.ColumnChart(document.getElementById('time2time_total_column_chart'));
+     chart.draw(data, options);
+}
+
+function drawItemizedExpensesComparisonChart() {
+
+    var data = google.visualization.arrayToDataTable([
+     ['Item', 'CurrentWeek', 'PreviousWeek'],[ '0', 33.867615, 93.531906 ],[ '1', 24.931627, 13.592398 ],[ '2', 43.031265, 36.397026 ],[ '3', 93.083046, 71.569954 ],[ '4', 2.7289689, 79.72687 ],[ '5', 27.592516, 87.14012 ],[ '6', 61.216484, 76.21069 ],[ '7', 30.369616, 81.305 ],[ '8', 14.484191, 1.2841761 ],[ '9', 92.47629, 74.41719 ],]);
+     var options = {
+        title: 'Month-To-Month Itemized Comparison',
+          hAxis: {title: 'Month', titleTextStyle: {color: 'red'}}
+     };
+     var chart = new google.visualization.ColumnChart(document.getElementById('time2time_itemized_column_chart'));
+     chart.draw(data, options);
+}
+
+function drawYearlySpendingPieChart() {
+    var data = google.visualization.arrayToDataTable([
+        ['Item', 'Cost'],['0',  22.211998 ],['1',  18.96134 ],['2',  16.155756 ],['3',  9.98329 ],['4',  88.2214 ],['5',  14.848465 ],['6',  22.825348 ],['7',  90.91801 ],['8',  95.83814 ],['9',  24.14096 ],]);
+        var options = {
+          title: 'Yearly Expense Distribution for $2,000',
+          is3D: true,
+        };
+        var chart = new google.visualization.PieChart(document.getElementById('overall_year_distribution_pie_chart'));
+        chart.draw(data, options);
+}
+
+function drawMonthlySpendingPieChart() {
+    var data = google.visualization.arrayToDataTable([
+        ['Item', 'Cost'],['0',  22.211998 ],['1',  18.96134 ],['2',  16.155756 ],['3',  9.98329 ],['4',  88.2214 ],['5',  14.848465 ],['6',  22.825348 ],['7',  90.91801 ],['8',  95.83814 ],['9',  24.14096 ],]);
+        var options = {
+          title: 'Monthly Expense Distribution'
+        };
+        var chart = new google.visualization.PieChart(document.getElementById('total_monthly_expense_summary_pie'));
+        chart.draw(data, options);
+}
+
+function drawTotalMonthlyExpenseSummary() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Item');
+    data.addColumn('string', 'Description');
+    data.addColumn('number', 'Cost');
+    data.addRows(
+    [['0', '0 description',  22.211998 ], ['1', '1 description',  18.96134 ], ['2', '2 description',  16.155756 ], ['3', '3 description',  9.98329 ], ['4', '4 description',  88.2214 ], ['5', '5 description',  14.848465 ], ['6', '6 description',  22.825348 ], ['7', '7 description',  90.91801 ], ['8', '8 description',  95.83814 ], ['9', '9 description',  24.14096 ]]
+    );
+    var table = new google.visualization.Table(document.getElementById('total_monthly_expense_summary_table'));
+    var formatter = new google.visualization.NumberFormat(
+      {prefix: '$', negativeColor: 'red', negativeParens: true});
+    formatter.format(data, 2); // Apply formatter to second column
+    table.draw(data, {allowHtml: true, showRowNumber: true});
+}
+</script>
+</body>
+</html>

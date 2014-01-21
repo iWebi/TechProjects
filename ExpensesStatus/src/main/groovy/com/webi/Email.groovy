@@ -33,8 +33,39 @@ class Email {
 	
 // Testing purpose
     public static void main(String[] args) {
-        ExpenseDetails expenseDetails = new ExpenseDetails([costCo:203.4, target:304])
-        sendStatusEmail(expenseDetails)
+		GStringTemplateEngine engine = new GStringTemplateEngine()
+		def itemizedExpensesByWeek = [], totalExpensesByWeek = []
+		Random random = new Random()
+		10.times { number ->
+			ExpenseItem expenseItem = new ExpenseItem().with {
+				itemType = number as String
+				itemDescription = itemType + ' description'
+				cost = random.nextFloat() *100
+				return it
+			}
+			itemizedExpensesByWeek << new Time2TimeItemCompare().with {
+				item = number as String
+				currentTimeCost = random.nextFloat() *100
+				previousTimeCost = random.nextFloat() *100
+				return it
+			}
+			totalExpensesByWeek << new Time2TimeItemCompare().with {
+				item = number as String
+				currentTimeCost = random.nextFloat() *100*5
+				previousTimeCost = random.nextFloat() *100*3
+				return it
+			}
+			ExpenseUtil.addToExpensesByItemType(expenseItem)
+		}
+
+		Map bindings = ['expensesByItemTypes':ExpenseUtil.expensesByItemType,
+				'itemizedExpensesByWeek':itemizedExpensesByWeek,
+				'totalExpensesByWeek':totalExpensesByWeek,
+				'yearlyExpensesByItemTypes':ExpenseUtil.expensesByItemType,
+				'annualTotalExpeneses': '$2,000']
+		def template = engine.createTemplate(new File('C:\\Users\\Webi\\workspace\\ExpensesStatus\\src\\main\\groovy\\com\\webi\\SuccessStatusReport.template')).make(bindings)
+		new File('C:\\Users\\Webi\\workspace\\ExpensesStatus\\src\\main\\groovy\\com\\webi\\SuccessStatusReport_Generated.html').text = template.toString()
+
     }
 
     private static void sendMail(String bodyText) {

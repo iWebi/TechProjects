@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expense Summary</title>
+    <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+</head>
+<body>
+<div id='total_monthly_expense_summary_table' style="width: 1040px;"></div>
+<div id="total_monthly_expense_summary_pie" style="width: 900px; height: 500px;"></div>
+<div id="time2time_itemized_column_chart" style="width: 900px; height: 500px;"></div>
+<div id="time2time_total_column_chart" style="width: 900px; height: 500px;"></div>
+<div id="overall_year_distribution_pie_chart" style="width: 900px; height: 500px;"></div>
+
+<script>
+google.load('visualization', '1', {packages:['corechart', 'table']});
+google.setOnLoadCallback(drawCharts);
+
+function drawCharts() {
+    drawMonthlySpendingPieChart();
+    drawTotalMonthlyExpenseSummary();
+    drawItemizedExpensesComparisonChart();
+    drawTotalExpensesComparisonChart();
+    drawYearlySpendingPieChart();
+}
+
+function drawTotalExpensesComparisonChart() {
+
+    var data = google.visualization.arrayToDataTable([
+     <%
+          out << "['Item', 'CurrentWeek', 'PreviousWeek'],"
+          totalExpensesByWeek.each { com.webi.Time2TimeItemCompare time2TimeItemCompare->
+            out << "[ '$time2TimeItemCompare.item', $time2TimeItemCompare.currentTimeCost, $time2TimeItemCompare.previousTimeCost ],"
+          }
+        out << "]);"
+     %>
+     var options = {
+        title: 'Month-To-Month Total Comparison',
+          hAxis: {title: 'Month', titleTextStyle: {color: 'red'}}
+     };
+     var chart = new google.visualization.ColumnChart(document.getElementById('time2time_total_column_chart'));
+     chart.draw(data, options);
+}
+
+function drawItemizedExpensesComparisonChart() {
+
+    var data = google.visualization.arrayToDataTable([
+     <%
+          out << "['Item', 'CurrentWeek', 'PreviousWeek'],"
+          itemizedExpensesByWeek.each { com.webi.Time2TimeItemCompare time2TimeItemCompare->
+            out << "[ '$time2TimeItemCompare.item', $time2TimeItemCompare.currentTimeCost, $time2TimeItemCompare.previousTimeCost ],"
+          }
+        out << "]);"
+     %>
+     var options = {
+        title: 'Month-To-Month Itemized Comparison',
+          hAxis: {title: 'Month', titleTextStyle: {color: 'red'}}
+     };
+     var chart = new google.visualization.ColumnChart(document.getElementById('time2time_itemized_column_chart'));
+     chart.draw(data, options);
+}
+
+function drawYearlySpendingPieChart() {
+    var data = google.visualization.arrayToDataTable([
+        <%
+            out <<  "['Item', 'Cost'],"
+            yearlyExpensesByItemTypes.values().each { com.webi.ExpenseItem expenseItem ->
+             out <<  "['${expenseItem.itemType}',  ${expenseItem.cost} ],"
+             }
+            out << "]);"
+        %>
+        var options = {
+          title: 'Yearly Expense Distribution for <% out << annualTotalExpeneses %>',
+          is3D: true,
+        };
+        var chart = new google.visualization.PieChart(document.getElementById('overall_year_distribution_pie_chart'));
+        chart.draw(data, options);
+}
+
+function drawMonthlySpendingPieChart() {
+    var data = google.visualization.arrayToDataTable([
+        <%
+            out <<  "['Item', 'Cost'],"
+            expensesByItemTypes.values().each { com.webi.ExpenseItem expenseItem ->
+             out <<  "['${expenseItem.itemType}',  ${expenseItem.cost} ],"
+             }
+            out << "]);"
+        %>
+        var options = {
+          title: 'Monthly Expense Distribution'
+        };
+        var chart = new google.visualization.PieChart(document.getElementById('total_monthly_expense_summary_pie'));
+        chart.draw(data, options);
+}
+
+function drawTotalMonthlyExpenseSummary() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Item');
+    data.addColumn('string', 'Description');
+    data.addColumn('number', 'Cost');
+    data.addRows(
+    <%
+        out <<  expensesByItemTypes.values().collect { com.webi.ExpenseItem expenseItem ->
+            "['${expenseItem.itemType}', '${expenseItem.itemDescription}',  ${expenseItem.cost} ]"
+         }
+    %>
+    );
+    var table = new google.visualization.Table(document.getElementById('total_monthly_expense_summary_table'));
+    var formatter = new google.visualization.NumberFormat(
+      {prefix: '\$', negativeColor: 'red', negativeParens: true});
+    formatter.format(data, 2); // Apply formatter to second column
+    table.draw(data, {allowHtml: true, showRowNumber: true});
+}
+</script>
+</body>
+</html>
