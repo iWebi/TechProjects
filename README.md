@@ -3,7 +3,7 @@ TechProjects
 
 It will contain various projects created for personal use and technical skills build.
 
-ExpenseStatus:
+<b>ExpenseStatus:</b>
 This project is created using <a href="http://www.gebish.org/">geb</a> library. 
 <ul>
 <li>Uses page object pattern to create tests to Login to various bank/credit card provider companies (USAA, Bank Of Ametica) and other expenses related stores (CostCo, Macys, Target).</li>
