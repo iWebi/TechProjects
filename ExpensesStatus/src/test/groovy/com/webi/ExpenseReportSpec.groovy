@@ -55,8 +55,8 @@ class ExpenseReportSpec extends GebReportingSpec {
 		noExceptionThrown()
 		
 		where:
-		institute 			| 	startPage		| 	accountPage	
-		'Bank of America'	|  	BOAHomePage		|	BOAAccountPage	
+		institute 			| 	startPage	| 	accountPage	
+		'Bank of America'	        |  	BOAHomePage	|	BOAAccountPage	
 		'Amex'				|	AmexHomePage	|	AmexAccountPage
 		'Target'			|	TargetHomePage	|	TargetAccountPage	
 		'Macys'				|	MacysHomePage	|	MacysAccountPage 
